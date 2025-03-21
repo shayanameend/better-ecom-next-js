@@ -4,8 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "~/components/ui/button";
 
+import { auth } from "~/auth/client";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,9 +16,11 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { routes } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 
 const SignUpFormSchema = z.object({
+  name: z.string().min(3),
   email: z.string().email(),
   password: z.string().min(8),
 });
@@ -26,13 +29,36 @@ export default function SignUpPage() {
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: z.infer<typeof SignUpFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof SignUpFormSchema>) => {
     console.log({ data });
+
+    const { data: response, error } = await auth.signUp.email(
+      {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        callbackURL: routes.app.public.home.url(),
+      },
+      {
+        onRequest: (ctx) => {
+          console.log("onRequest", ctx);
+        },
+        onSuccess: (ctx) => {
+          console.log("onSuccess", ctx);
+        },
+        onError: (ctx) => {
+          console.log("onError", ctx);
+        },
+      },
+    );
+
+    console.log({ response, error });
   };
 
   return (
@@ -42,6 +68,19 @@ export default function SignUpPage() {
           onSubmit={form.handleSubmit(onSubmit)}
           className={cn("w-2/3 max-w-xs space-y-6")}
         >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"

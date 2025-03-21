@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { auth } from "~/auth/client";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -15,6 +16,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { routes } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 
 const SignInFormSchema = z.object({
@@ -31,10 +33,30 @@ export default function SignInPage() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof SignInFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof SignInFormSchema>) => {
     console.log({ data });
-  };
 
+    const { data: response, error } = await auth.signIn.email(
+      {
+        email: data.email,
+        password: data.password,
+        callbackURL: routes.app.public.home.url(),
+      },
+      {
+        onRequest: (ctx) => {
+          console.log("onRequest", ctx);
+        },
+        onSuccess: (ctx) => {
+          console.log("onSuccess", ctx);
+        },
+        onError: (ctx) => {
+          console.log("onError", ctx);
+        },
+      },
+    );
+
+    console.log({ response, error });
+  };
   return (
     <>
       <Form {...form}>

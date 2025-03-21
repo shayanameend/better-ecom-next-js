@@ -1,6 +1,6 @@
 import * as zod from "zod";
 
-export const envSchema = zod.object({
+const envSchema = zod.object({
   TURSO_DATABASE_URL: zod
     .string({
       message: "TURSO_DATABASE_URL must be a string",
@@ -22,7 +22,5 @@ export const envSchema = zod.object({
     message: "BETTER_AUTH_SECRET must be a string",
   }),
 });
-
-export type Env = zod.infer<typeof envSchema>;
 
 export const env = envSchema.parse(process.env);

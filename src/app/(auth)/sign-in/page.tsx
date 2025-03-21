@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { routes } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 
 const SignInFormSchema = z.object({
@@ -40,7 +39,6 @@ export default function SignInPage() {
       {
         email: data.email,
         password: data.password,
-        callbackURL: routes.app.public.home.url(),
       },
       {
         onRequest: (ctx) => {

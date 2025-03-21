@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { routes } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 
 const SignUpFormSchema = z.object({
@@ -43,7 +42,6 @@ export default function SignUpPage() {
         email: data.email,
         password: data.password,
         name: data.name,
-        callbackURL: routes.app.public.home.url(),
       },
       {
         onRequest: (ctx) => {

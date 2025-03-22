@@ -5,8 +5,8 @@ import { useState } from "react";
 
 import { toast } from "sonner";
 
-import { auth } from "~/auth/client";
-import { Button, buttonVariants, LoadingButton } from "~/components/ui/button";
+import { Button, LoadingButton, buttonVariants } from "~/components/ui/button";
+import { auth } from "~/lib/auth";
 import { routes } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
 
 import { RootHeader } from "~/components/layout/headers/root-header";
+import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
 
 import "~/styles/globals.css";
@@ -19,6 +20,7 @@ export default async function RootLayout({
       <body className={cn("relative")}>
         <RootHeader />
         {children}
+        <Toaster />
       </body>
     </html>
   );

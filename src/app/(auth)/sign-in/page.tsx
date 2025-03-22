@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { auth } from "~/auth/client";
-import { Button } from "~/components/ui/button";
+import { LoadingButton } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,6 +27,8 @@ const SignInFormSchema = z.object({
 });
 
 export default function SignInPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -33,27 +38,20 @@ export default function SignInPage() {
   });
 
   const onSubmit = async (data: z.infer<typeof SignInFormSchema>) => {
-    console.log({ data });
-
-    const { data: response, error } = await auth.signIn.email(
-      {
-        email: data.email,
-        password: data.password,
+    await auth.signIn.email(data, {
+      onRequest: (ctx) => {
+        setIsLoading(true);
       },
-      {
-        onRequest: (ctx) => {
-          console.log("onRequest", ctx);
-        },
-        onSuccess: (ctx) => {
-          console.log("onSuccess", ctx);
-        },
-        onError: (ctx) => {
-          console.log("onError", ctx);
-        },
+      onSuccess: (ctx) => {
+        toast.success("Signed in successfully");
       },
-    );
+      onError: (ctx) => {
+        toast.error(ctx.error.message);
+      },
+    });
 
-    console.log({ response, error });
+    setIsLoading(false);
+    form.reset();
   };
   return (
     <>
@@ -88,9 +86,13 @@ export default function SignInPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" className={cn("w-full")}>
+          <LoadingButton
+            className={cn("w-full")}
+            type="submit"
+            isLoading={isLoading}
+          >
             Sign In
-          </Button>
+          </LoadingButton>
         </form>
       </Form>
     </>

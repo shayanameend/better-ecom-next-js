@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { auth } from "~/auth/client";
-import { Button } from "~/components/ui/button";
+import { LoadingButton } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -25,6 +28,8 @@ const SignUpFormSchema = z.object({
 });
 
 export default function SignUpPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
     defaultValues: {
@@ -35,28 +40,18 @@ export default function SignUpPage() {
   });
 
   const onSubmit = async (data: z.infer<typeof SignUpFormSchema>) => {
-    console.log({ data });
-
-    const { data: response, error } = await auth.signUp.email(
-      {
-        email: data.email,
-        password: data.password,
-        name: data.name,
+    await auth.signUp.email(data, {
+      onRequest: (ctx) => {
+        setIsLoading(true);
       },
-      {
-        onRequest: (ctx) => {
-          console.log("onRequest", ctx);
-        },
-        onSuccess: (ctx) => {
-          console.log("onSuccess", ctx);
-        },
-        onError: (ctx) => {
-          console.log("onError", ctx);
-        },
+      onSuccess: (ctx) => {},
+      onError: (ctx) => {
+        toast.error(ctx.error.message);
       },
-    );
+    });
 
-    console.log({ response, error });
+    setIsLoading(false);
+    form.reset();
   };
 
   return (
@@ -105,9 +100,13 @@ export default function SignUpPage() {
               </FormItem>
             )}
           />
-          <Button type="submit" className={cn("w-full")}>
+          <LoadingButton
+            className={cn("w-full")}
+            type="submit"
+            isLoading={isLoading}
+          >
             Sign Up
-          </Button>
+          </LoadingButton>
         </form>
       </Form>
     </>

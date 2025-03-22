@@ -44,7 +44,9 @@ export default function SignUpPage() {
       onRequest: (ctx) => {
         setIsLoading(true);
       },
-      onSuccess: (ctx) => {},
+      onSuccess: (ctx) => {
+        toast.success("Signed up successfully");
+      },
       onError: (ctx) => {
         toast.error(ctx.error.message);
       },

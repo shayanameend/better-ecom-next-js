@@ -28,8 +28,8 @@ export function HeaderCTA() {
       {data ? (
         <LoadingButton
           isLoading={isLoading}
-          onClick={() => {
-            auth.signOut({
+          onClick={async () => {
+            await auth.signOut({
               fetchOptions: {
                 onRequest: (ctx) => {
                   setIsLoading(true);
@@ -42,6 +42,8 @@ export function HeaderCTA() {
                 },
               },
             });
+
+            setIsLoading(false);
           }}
         >
           Sign Out

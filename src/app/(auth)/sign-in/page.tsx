@@ -38,17 +38,20 @@ export default function SignInPage() {
   });
 
   const onSubmit = async (data: z.infer<typeof SignInFormSchema>) => {
-    await auth.signIn.email(data, {
-      onRequest: (ctx) => {
-        setIsLoading(true);
+    await auth.signIn.email(
+      { ...data, callbackURL: "http://localhost:3000" },
+      {
+        onRequest: (ctx) => {
+          setIsLoading(true);
+        },
+        onSuccess: (ctx) => {
+          toast.success("Signed in successfully");
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
       },
-      onSuccess: (ctx) => {
-        toast.success("Signed in successfully");
-      },
-      onError: (ctx) => {
-        toast.error(ctx.error.message);
-      },
-    });
+    );
 
     setIsLoading(false);
     form.reset();

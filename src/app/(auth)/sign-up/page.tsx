@@ -40,17 +40,20 @@ export default function SignUpPage() {
   });
 
   const onSubmit = async (data: z.infer<typeof SignUpFormSchema>) => {
-    await auth.signUp.email(data, {
-      onRequest: (ctx) => {
-        setIsLoading(true);
+    await auth.signUp.email(
+      { ...data, callbackURL: "http://localhost:3000" },
+      {
+        onRequest: (ctx) => {
+          setIsLoading(true);
+        },
+        onSuccess: (ctx) => {
+          toast.success("Signed up successfully");
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
       },
-      onSuccess: (ctx) => {
-        toast.success("Signed up successfully");
-      },
-      onError: (ctx) => {
-        toast.error(ctx.error.message);
-      },
-    });
+    );
 
     setIsLoading(false);
     form.reset();
